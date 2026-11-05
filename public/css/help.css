@@ -1,0 +1,212 @@
+.help-widget {
+    --help-surf: var(--surf, rgb(255 255 255 / 82%));
+    --help-bd: var(--bd, rgb(148 163 184 / 30%));
+    --help-ink: var(--ink, #0f172a);
+    --help-muted: var(--muted, #64748b);
+    --help-blue: var(--blue, #3b82f6);
+    --help-shadow: var(--sh, 0 20px 60px rgb(15 23 42 / 22%));
+    position: fixed;
+    right: 1.5rem;
+    bottom: 1.5rem;
+    z-index: 50;
+    color: var(--help-ink);
+    font-family: inherit;
+}
+
+.help-toggle {
+    position: relative;
+    display: grid;
+    width: 56px;
+    height: 56px;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    color: #fff;
+    background: linear-gradient(145deg, #4d8cff, #2463df);
+    box-shadow: 0 8px 18px rgb(37 99 235 / 35%), var(--help-shadow);
+    font-size: 1.5rem;
+    font-weight: 800;
+}
+
+.help-pulse {
+    position: absolute;
+    inset: 0;
+    border: 2px solid var(--help-blue);
+    border-radius: inherit;
+    animation: help-pulse 4.5s ease-out infinite;
+}
+
+.help-panel {
+    position: absolute;
+    right: 0;
+    bottom: 72px;
+    display: none;
+    width: min(370px, calc(100vw - 32px));
+    max-height: min(600px, calc(100vh - 112px));
+    overflow-y: auto;
+    border: 1px solid var(--help-bd);
+    border-radius: 1.45rem;
+    background: linear-gradient(165deg, rgb(244 248 255 / 97%), rgb(235 242 255 / 95%));
+    box-shadow: var(--help-shadow);
+    backdrop-filter: blur(20px);
+}
+
+.help-panel.is-open {
+    display: block;
+    animation: help-in .18s ease-out;
+}
+
+.help-header,
+.help-faqs,
+.help-contact {
+    padding: 1.1rem 1.05rem;
+}
+
+.help-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 1.15rem 1.2rem 1rem;
+    border-bottom: 0;
+}
+
+.help-header h2 {
+    margin: 0;
+    color: #17213a;
+    font-size: 1.08rem;
+    font-weight: 800;
+}
+
+.help-header p {
+    margin: .35rem 0 0;
+    color: #73809b;
+    font-size: .75rem;
+}
+
+.help-close {
+    display: grid;
+    width: 31px;
+    height: 31px;
+    place-items: center;
+    border: 0;
+    border-radius: 10px;
+    color: #26334e;
+    background: #dce5f6;
+    font-size: 1rem;
+}
+
+.help-contact p {
+    margin: 0 0 .65rem;
+    font-size: .78rem;
+    font-weight: 800;
+}
+
+.help-faq {
+    margin-bottom: .55rem;
+    border: 1px solid rgb(255 255 255 / 80%);
+    border-radius: .9rem;
+    background: rgb(255 255 255 / 82%);
+    box-shadow: 0 3px 12px rgb(148 163 184 / 5%);
+}
+
+.help-faq summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    padding: .88rem .8rem;
+    cursor: pointer;
+    color: #17213a;
+    font-size: .77rem;
+    font-weight: 700;
+    list-style: none;
+}
+
+.help-faq summary::-webkit-details-marker {
+    display: none;
+}
+
+.help-faq-icon {
+    flex: 0 0 auto;
+    color: var(--help-blue);
+    font-size: 1.15rem;
+    line-height: 1;
+}
+
+.help-faq[open] .help-faq-icon {
+    transform: rotate(45deg);
+}
+
+.help-faq p {
+    margin: -.1rem .8rem .85rem;
+    color: #66748f;
+    font-size: .76rem;
+    line-height: 1.55;
+}
+
+.help-contact {
+    padding: .55rem 1.05rem 1.15rem;
+    border-top: 0;
+}
+
+.help-contact-actions {
+    display: flex;
+    gap: .5rem;
+}
+
+.help-contact-link {
+    flex: 1 1 0;
+    padding: .68rem .55rem;
+    border: 1px solid transparent;
+    border-radius: .75rem;
+    color: #fff;
+    font-size: .72rem;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+}
+
+.help-whatsapp { background: linear-gradient(145deg, #28b873, #0da15d); }
+.help-email {
+    border-color: #fff;
+    color: #17213a;
+    background: #fff;
+}
+
+@keyframes help-pulse {
+    0% { opacity: .7; transform: scale(1); }
+    70%, 100% { opacity: 0; transform: scale(1.45); }
+}
+
+@keyframes help-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+html.dark .help-widget {
+        --help-surf: var(--surf, rgb(15 23 42 / 92%));
+        --help-ink: var(--ink, #f8fafc);
+        --help-bd: var(--bd, rgb(148 163 184 / 25%));
+}
+
+html.dark .help-panel {
+        background: linear-gradient(165deg, rgb(30 41 59 / 97%), rgb(15 23 42 / 97%));
+}
+
+html.dark .help-header h2,
+html.dark .help-faq summary {
+        color: #f8fafc;
+}
+
+html.dark .help-faq {
+        border-color: rgb(148 163 184 / 12%);
+        background: rgb(51 65 85 / 72%);
+}
+
+html.dark .help-email {
+        color: #17213a;
+}
+
+@media (max-width: 480px) {
+    .help-widget { right: 1rem; bottom: 1rem; }
+}
