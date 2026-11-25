@@ -42,7 +42,7 @@ class HotelReviewTest extends TestCase
             'destination' => 'Halmahera',
             'checkin' => today()->addDay()->toDateString(),
             'checkout' => today()->addDays(2)->toDateString(),
-            'guests' => 2,
+            'guests' => 8,
             'rooms' => 1,
         ]))
             ->assertOk()
@@ -116,7 +116,7 @@ class HotelReviewTest extends TestCase
             'destination' => 'Halmahera',
             'checkin' => today()->addDay()->toDateString(),
             'checkout' => today()->addDays(2)->toDateString(),
-            'guests' => 2,
+            'guests' => 8,
             'rooms' => 1,
         ]))
             ->assertOk()

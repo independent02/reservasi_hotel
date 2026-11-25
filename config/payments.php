@@ -89,5 +89,5 @@ return [
     ))),
     'expiry_hours' => max(1, (int) env('PAYMENT_EXPIRY_HOURS', 24)),
     'proof_max_kilobytes' => 5120,
-    'proof_path' => storage_path('app/private/payment-proofs'),
+    'proof_disk' => env('PAYMENT_PROOF_DISK', 'supabase'),
 ];

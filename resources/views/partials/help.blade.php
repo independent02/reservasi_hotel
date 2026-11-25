@@ -59,16 +59,20 @@
                     @if ($whatsapp !== '')
                         <a
                             class="help-contact-link help-whatsapp"
-                            href="https://wa.me/6289667875415?text={{ urlencode(__('help.whatsapp_message_default', [], app()->getLocale()) ?: 'Halo Admin Stayvia, saya ingin bertanya seputar reservasi kamar.') }}"
+                            href="https://wa.me/{{ $whatsapp }}?text={{ urlencode($whatsappMessage) }}"
                             target="_blank"
                             rel="noopener noreferrer"
                         >{{ __('help.chat_whatsapp') }}</a>
                     @endif
 
                     @if ($supportEmail !== '')
-                        <a 
+                        <a
+                            class="help-contact-link help-email"
+                            href="{{ $emailHref }}"
+                        >{{ __('help.send_email') }}</a>
+                        <a
         class="help-contact-link help-email"
-        href="https://mail.google.com/mail/?view=cm&fs=1&to=vibecode812@gmail.com&su=Bantuan%20Reservasi%20Stayvia"
+        href="{{ $gmailHref }}"
         target="_blank"
     >{{ __('help.send_email') }}</a>
                     @endif

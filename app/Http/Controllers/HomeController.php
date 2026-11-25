@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class HomeController
@@ -77,7 +78,7 @@ class HomeController
             'checkin_time' => ['sometimes', 'date_format:H:i'],
             'checkout' => ['required', 'date', 'after:checkin'],
             'checkout_time' => ['sometimes', 'date_format:H:i'],
-            'guests' => ['required', 'integer', 'min:1', 'max:8'],
+            'guests' => ['required', 'integer', 'min:1', 'max:12'],
             'rooms' => ['required', 'integer', 'min:1', 'max:5'],
             'all_hotels' => ['sometimes', 'boolean'],
         ]);
@@ -89,6 +90,11 @@ class HomeController
 
         $guestCount = (int) $filters['guests'];
         $roomCount = (int) $filters['rooms'];
+        if ($guestCount > 8 && $roomCount > 1) {
+            throw ValidationException::withMessages([
+                'guests' => __('The guests field must not be greater than 8.'),
+            ]);
+        }
         $showAllHotels = (bool) ($filters['all_hotels'] ?? false);
         $mappedHotelSlug = match (true) {
             $guestCount <= 2 => 'taman-sari-garden-hotel',

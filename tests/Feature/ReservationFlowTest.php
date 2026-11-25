@@ -9,7 +9,6 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
@@ -21,11 +20,10 @@ class ReservationFlowTest extends TestCase
 
     private Hotel $hotel;
 
-    private string $proofPath;
-
     protected function setUp(): void
     {
         parent::setUp();
+        Storage::fake('supabase');
         $this->seed();
         $this->user = User::create([
             'name' => 'Ayu Putri',
@@ -33,7 +31,6 @@ class ReservationFlowTest extends TestCase
             'password' => 'safe-password-123',
         ]);
         $this->hotel = Hotel::where('slug', 'aksara-ubud-resort-spa')->firstOrFail();
-        $this->proofPath = storage_path('framework/testing/manual-payment-proofs-'.uniqid('', true));
 
         config([
             'payments.admin_emails' => ['admin@example.com'],
@@ -71,18 +68,16 @@ class ReservationFlowTest extends TestCase
                     'recipient' => null, 'account_name' => null, 'qr_image' => null, 'enabled' => false,
                 ],
             ],
-            'payments.proof_path' => $this->proofPath,
+            'payments.proof_disk' => 'supabase',
             'payments.expiry_hours' => 24,
         ]);
     }
 
-    protected function tearDown(): void
+    public function test_payment_proof_storage_uses_the_supabase_disk(): void
     {
-        if (isset($this->proofPath) && File::isDirectory($this->proofPath)) {
-            File::deleteDirectory($this->proofPath);
-        }
-
-        parent::tearDown();
+        $this->assertSame('supabase', config('payments.proof_disk'));
+        $this->assertSame('s3', config('filesystems.disks.supabase.driver'));
+        $this->assertNotEmpty(config('filesystems.disks.supabase.bucket'));
     }
 
     public function test_booking_requires_an_authenticated_user(): void
@@ -315,7 +310,7 @@ class ReservationFlowTest extends TestCase
         $this->assertSame('Transfer Bank BCA', $reservation->bank_name);
         $this->assertSame('pending', $reservation->status);
         $this->assertNull($reservation->expires_at);
-        $this->assertTrue(Storage::build(['driver' => 'local', 'root' => $this->proofPath])->exists($reservation->payment_proof));
+        $this->assertTrue(Storage::disk('supabase')->exists($reservation->payment_proof));
         $this->actingAs($this->user)
             ->get(route('reservations.show', $reservation))
             ->assertOk()
@@ -368,7 +363,7 @@ class ReservationFlowTest extends TestCase
             'payment_submitted_at' => now(),
             'expires_at' => null,
         ]);
-        Storage::build(['driver' => 'local', 'root' => $this->proofPath])->put('proofs/sample.jpg', 'proof');
+        Storage::disk('supabase')->put('proofs/sample.jpg', 'proof');
 
         $this->actingAs($this->user)
             ->get(route('admin.payment-reviews.index'))
@@ -488,7 +483,7 @@ class ReservationFlowTest extends TestCase
             'payment_submitted_at' => now(),
             'expires_at' => null,
         ]);
-        $proofDisk = Storage::build(['driver' => 'local', 'root' => $this->proofPath]);
+        $proofDisk = Storage::disk('supabase');
         $proofDisk->put('proofs/remove-me.jpg', 'private-proof');
         $admin = User::create([
             'name' => 'Admin',
@@ -870,7 +865,7 @@ class ReservationFlowTest extends TestCase
             'expires_at' => now()->subMinute(),
             'payment_proof' => null,
         ]);
-        $proofDisk = Storage::build(['driver' => 'local', 'root' => $this->proofPath]);
+        $proofDisk = Storage::disk('supabase');
         $proofDisk->put('proofs/cancelled.jpg', 'private-proof');
 
         $this->actingAs($this->user)

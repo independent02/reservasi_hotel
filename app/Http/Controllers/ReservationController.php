@@ -329,11 +329,7 @@ class ReservationController
 
         if ($proofPath) {
             try {
-                $proofDisk = Storage::build([
-                    'driver' => 'local',
-                    'root' => config('payments.proof_path'),
-                    'throw' => true,
-                ]);
+                $proofDisk = Storage::disk(config('payments.proof_disk', 'supabase'));
                 if (! $proofDisk->delete($proofPath)) {
                     Log::warning('Could not remove payment proof for deleted reservation.', [
                         'reservation_id' => $reservation->id,

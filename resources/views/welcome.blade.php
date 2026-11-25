@@ -289,6 +289,9 @@
                             @if ($guestRange)
                                 <span>{{ $guestRange }}</span>
                             @endif
+                            @if (! ($filters['all_hotels'] ?? false) && (int) $filters['rooms'] === 1)
+                                <span>{{ __(':count kamar', ['count' => $filters['rooms']]) }} · {{ __(':count tamu', ['count' => $filters['guests']]) }}</span>
+                            @endif
                             <span>{{ $filters['checkin'] }} {{ $filters['checkin_time'] }} — {{ $filters['checkout'] }} {{ $filters['checkout_time'] }}</span>
                         </div>
                         <div class="hotel-bottom">

@@ -50,12 +50,8 @@ class ManualPaymentController
         $method = $methods[$validated['payment_method']] ?? null;
         abort_unless($method, 422, 'Metode pembayaran tidak tersedia.');
 
-        $disk = Storage::build([
-            'driver' => 'local',
-            'root' => config('payments.proof_path'),
-            'throw' => true,
-        ]);
-        $path = $disk->putFile('', $request->file('payment_proof'));
+        $disk = Storage::disk(config('payments.proof_disk', 'supabase'));
+        $path = $disk->putFile('payment-proofs', $request->file('payment_proof'));
         if (! is_string($path)) {
             throw new \RuntimeException('Could not store the uploaded payment proof.');
         }
@@ -168,11 +164,7 @@ class ManualPaymentController
         $this->authorizeAdmin($request);
         abort_unless(filled($reservation->payment_proof), 404);
 
-        $disk = Storage::build([
-            'driver' => 'local',
-            'root' => config('payments.proof_path'),
-            'throw' => true,
-        ]);
+        $disk = Storage::disk(config('payments.proof_disk', 'supabase'));
         abort_unless($disk->exists($reservation->payment_proof), 404);
 
         return $disk->response($reservation->payment_proof, 'bukti-transfer-'.$reservation->id, [
@@ -254,11 +246,7 @@ class ManualPaymentController
 
         if ($proofPath) {
             try {
-                $disk = Storage::build([
-                    'driver' => 'local',
-                    'root' => config('payments.proof_path'),
-                    'throw' => true,
-                ]);
+                $disk = Storage::disk(config('payments.proof_disk', 'supabase'));
 
                 if (! $disk->delete($proofPath)) {
                     Log::warning('Could not remove payment proof for deleted admin reservation.', [
